@@ -1,7 +1,7 @@
 import * as React from 'react'
-import {Children, Component, PropTypes, ReactElement, ReactType, cloneElement} from 'react'
+import {Children, Component, PropTypes, ReactElement, cloneElement} from 'react'
 import {findDOMNode} from 'react-dom'
-import {Motion, spring} from 'react-motion'
+import {Motion, OpaqueConfig, spring} from 'react-motion'
 
 export const heroTransitionContext = {
   elementAdded: PropTypes.func,
@@ -42,7 +42,18 @@ export type HeroProps = {
   children?: ReactElement<any>
 }
 
-export class Hero extends Component<HeroProps, {render: boolean, hidden: boolean}> {
+export type HeroState = {
+  render?: boolean
+  hidden?: boolean
+  to?: {
+    translateX: number|OpaqueConfig
+    translateY: number|OpaqueConfig
+    scaleX: number|OpaqueConfig
+    scaleY: number|OpaqueConfig
+  }
+}
+
+export class Hero extends Component<HeroProps, HeroState> {
   static contextTypes = heroTransitionContext
   state = {render: false, hidden: true, to: {
     translateX: 0,
@@ -82,7 +93,7 @@ export class Hero extends Component<HeroProps, {render: boolean, hidden: boolean
   }
 
   render() {
-    const {hidden, from, to, render} = this.state
+    const {hidden, to, render} = this.state
     const heroIn = !!this.oldRect
     if (!render) return null
 
@@ -95,19 +106,19 @@ export class Hero extends Component<HeroProps, {render: boolean, hidden: boolean
     return (
       <Motion style={to}>
         {value => cloneElement(Children.only(renderedChildren), {
-            ref: this.setRef
+            ref: this.setRef,
             style: heroIn
               ? {
-                ...renderedChildren.props.style,
+                ...(renderedChildren['props'] && renderedChildren['props'].style),
                 transform: `translate(${value.translateX}px, ${value.translateY}px) ` +
                            `scale(${value.scaleX}, ${value.scaleY})`,
                 transformOrigin: '0 0',
               }
               : {
-                ...renderedChildren.props.style,
+                ...(renderedChildren['props'] && renderedChildren['props'].style),
                 visability: hidden
                   ? 'hidden'
-                  : (renderedChildren.props.style && renderedChildren.props.style.visability),
+                  : (renderedChildren['props'] && renderedChildren['props'].style && renderedChildren['props'].style.visability),
                 transformOrigin: '0 0',
               },
           }

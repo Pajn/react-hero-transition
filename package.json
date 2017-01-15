@@ -1,9 +1,9 @@
 {
   "name": "react-hero-transition",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "dist/src/index.js",
   "repository": {
-    "url": "Pajn/react-hero-transition",
+    "url": "https://github.com/Pajn/react-hero-transition",
     "type": "git"
   },
   "author": "Rasmus Eneman <rasmus@eneman.eu>",

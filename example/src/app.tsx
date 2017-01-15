@@ -8,7 +8,6 @@ export const Column = ({style, ...props}: any) => <div style={{
   ...style,
   display: 'flex',
   flexDirection: 'column',
-  width: 200,
 }} {...props} />
 export class Number extends Component<any, {}> {
   render() {
@@ -43,7 +42,7 @@ export class App extends Component<{}, {loadAnimation?: number, position?: numbe
 
     return (
       <TransitionProvider>
-        <Column style={{width: 'auto'}}>
+        <Column>
           <Row>
             <Column>
               <Box>
