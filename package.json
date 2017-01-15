@@ -1,0 +1,31 @@
+{
+  "name": "react-hero-transition",
+  "version": "0.1.1",
+  "main": "dist/src/index.js",
+  "repository": {
+    "url": "Pajn/react-hero-transition",
+    "type": "git"
+  },
+  "author": "Rasmus Eneman <rasmus@eneman.eu>",
+  "scripts": {
+    "build": "tscomp build",
+    "watch": "tscomp watch",
+    "prepublish": "npm run build"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "tscomp": "^0.7.5",
+    "tslint": "^4.3.1",
+    "tslint-config-beanloop": "^0.1.0"
+  },
+  "dependencies": {
+    "@types/react": "^15.0.0",
+    "@types/react-dom": "^0.14.20",
+    "@types/react-motion": "^0.0.20",
+    "react-motion": "^0.4.7"
+  },
+  "peerDependencies": {
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2"
+  }
+}
