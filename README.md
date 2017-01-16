@@ -1,13 +1,14 @@
 # react-hero-transition
 
-A library to help create beutiful hero transitions for view changes. It tracks
-mounting and unmounting of components and is therfore not dependant on react-router
-or any other way of managing different views.
+A library to help create beutiful hero transitions for view changes. 
+It tracks mounting and unmounting of components and is therfore not dependant on 
+react-router or any other way of managing different views.
 It is based on the principle of [FLIP](https://aerotwist.com/blog/flip-your-animations/) animations and uses `getBoundingClientRect` 
 to calculate the position and size of the old and the new element, the new element
-is then animated using transforms from the position of the old element. Transitions
-are however applied using [react-motion](https://github.com/chenglou/react-motion) instead of CSS transitions for a more
-realistic physics feeling.
+is then animated using transforms from the position of the old element. 
+
+Transitions can be applied using either [react-motion](https://github.com/chenglou/react-motion) or css transitions.
+You can also write your own renderer that animates in whatever way you prefer.
 
 ## Usage
 First wrap your app with `<TransitionProvider>` similarly to the provider of [react-redux](https://github.com/reactjs/react-redux).
@@ -44,6 +45,13 @@ A basic example:
 
 How much time in ms it may pass between an element beeing removed and added for a hero transition to
 be run.
+
+##### renderer
+  - Type: `Renderer`
+  - required: no
+  - default value: cssTransition
+
+Which renderer to use for performing transitions
 
 ### Hero
 #### Props

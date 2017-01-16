@@ -1,6 +1,8 @@
 import * as React from 'react'
 import {Component} from 'react'
 import {Hero, TransitionProvider} from 'react-hero-transition'
+import {cssTransition} from 'react-hero-transition/dist/src/css-transition'
+import {reactMotion} from 'react-hero-transition/dist/src/react-motion'
 import {Motion, spring} from 'react-motion'
 
 export const Row = props => <div style={{display: 'flex'}} {...props} />
@@ -34,15 +36,35 @@ export const Box = props =>
     height: 200,
   }} {...props} />
 
-export class App extends Component<{}, {loadAnimation?: number, position?: number, positionSize?: number}> {
-  state = {loadAnimation: undefined, position: 0, positionSize: 0}
+const renderers = {
+  css: cssTransition(),
+  'react-motion': reactMotion(),
+}
+
+type State = {
+  loadAnimation?: number
+  position?: number
+  positionSize?: number
+  renderer?: string
+}
+
+export class App extends Component<{}, State> {
+  state = {loadAnimation: undefined, position: 0, positionSize: 0, renderer: 'css'}
 
   render() {
-    const {loadAnimation, position, positionSize} = this.state
+    const {loadAnimation, position, positionSize, renderer} = this.state
 
     return (
-      <TransitionProvider>
+      <TransitionProvider renderer={renderers[renderer]}>
         <Column>
+          {renderer === 'css'
+            ? <button onClick={() => this.setState({renderer: 'react-motion'})}>
+                Use react-motion
+              </button>
+            : <button onClick={() => this.setState({renderer: 'css'})}>
+                Use css transitions
+              </button>
+          }
           <Row>
             <Column>
               <Box>
