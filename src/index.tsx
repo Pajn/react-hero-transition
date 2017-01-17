@@ -1,15 +1,22 @@
-import * as React from 'react'
-import {Children, Component, PropTypes, ReactElement, cloneElement} from 'react'
+import {Children, Component, PropTypes, ReactElement} from 'react'
 import {findDOMNode} from 'react-dom'
-import {Motion, OpaqueConfig, spring} from 'react-motion'
+import {cssTransition} from './css-transition'
 
 export const heroTransitionContext = {
   elementAdded: PropTypes.func,
   elementRemoved: PropTypes.func,
+  renderer: PropTypes.object,
+}
+
+export type Renderer<T> = {
+  initialState: T
+  render: (hero: Hero<T>, renderedChildren: ReactElement<any>) => ReactElement<any>
+  runTransition: (hero: Hero<T>, rect: ClientRect) => any
 }
 
 export type ProviderProps = {
   timeout?: number
+  renderer?: Renderer<any>
 }
 
 export class TransitionProvider extends Component<ProviderProps, {}> {
@@ -28,6 +35,8 @@ export class TransitionProvider extends Component<ProviderProps, {}> {
           delete this.removedElements[id]
         }, typeof this.props.timeout === 'number' ? this.props.timeout : 100)
       },
+
+      renderer: this.props.renderer || cssTransition()
     }
   }
 
@@ -42,47 +51,49 @@ export type HeroProps = {
   children?: ReactElement<any>
 }
 
-export type HeroState = {
+export type HeroState<T> = {
   render?: boolean
   hidden?: boolean
-  to?: {
-    translateX: number|OpaqueConfig
-    translateY: number|OpaqueConfig
-    scaleX: number|OpaqueConfig
-    scaleY: number|OpaqueConfig
-  }
+  rendererState: T
 }
 
-export class Hero extends Component<HeroProps, HeroState> {
+export class Hero<T> extends Component<HeroProps, HeroState<T>> {
   static contextTypes = heroTransitionContext
-  state = {render: false, hidden: true, to: {
-    translateX: 0,
-    translateY: 0,
-    scaleX: 1,
-    scaleY: 1,
-  }}
+  state = {render: false, hidden: true} as HeroState<T>
   element: Element
   oldRect: ClientRect
   setRef = component => {
     this.element = findDOMNode(component)
   }
 
+  constructor(props, context) {
+    super(props, context)
+
+    this.state.rendererState = context.renderer.initialState
+  }
+
   componentWillMount() {
     this.oldRect = this.context.elementAdded(this.props.id)
     if (this.oldRect) {
-      this.setState({render: true}, () => {
+      this.setState({render: true} as HeroState<T>, () => {
         this.maybeRunTransition()
-        this.setState({hidden: false})
+        this.setState({hidden: false} as HeroState<T>)
       })
+    }
+  }
+
+  componentWillReceiveProps(_, nextContext) {
+    if (this.context.renderer !== nextContext.renderer) {
+      this.setState({rendererState: nextContext.renderer && nextContext.renderer.initialState})
     }
   }
 
   componentDidMount() {
     if (!this.state.render) {
       this.oldRect = this.context.elementAdded(this.props.id)
-      this.setState({render: true}, () => {
+      this.setState({render: true} as HeroState<T>, () => {
         this.maybeRunTransition()
-        this.setState({hidden: false})
+        this.setState({hidden: false} as HeroState<T>)
       })
     }
   }
@@ -93,7 +104,7 @@ export class Hero extends Component<HeroProps, HeroState> {
   }
 
   render() {
-    const {hidden, to, render} = this.state
+    const {render} = this.state
     const heroIn = !!this.oldRect
     if (!render) return null
 
@@ -103,51 +114,13 @@ export class Hero extends Component<HeroProps, HeroState> {
 
     if (!renderedChildren) return null
 
-    return (
-      <Motion style={to}>
-        {value => cloneElement(Children.only(renderedChildren), {
-            ref: this.setRef,
-            style: heroIn
-              ? {
-                ...(renderedChildren['props'] && renderedChildren['props'].style),
-                transform: `translate(${value.translateX}px, ${value.translateY}px) ` +
-                           `scale(${value.scaleX}, ${value.scaleY})`,
-                transformOrigin: '0 0',
-              }
-              : {
-                ...(renderedChildren['props'] && renderedChildren['props'].style),
-                visability: hidden
-                  ? 'hidden'
-                  : (renderedChildren['props'] && renderedChildren['props'].style && renderedChildren['props'].style.visability),
-                transformOrigin: '0 0',
-              },
-          }
-        )}
-      </Motion>
-    )
+    return this.context.renderer.render(this, Children.only(renderedChildren))
   }
 
   private maybeRunTransition() {
     if (this.oldRect) {
       const rect = this.element.getBoundingClientRect()
-
-      this.setState({
-        to: {
-          translateX: this.oldRect.left - rect.left,
-          translateY: this.oldRect.top - rect.top,
-          scaleX: this.oldRect.width / rect.width,
-          scaleY: this.oldRect.height / rect.height,
-        }
-      }, () => {
-        this.setState({
-          to: {
-            translateX: spring(0),
-            translateY: spring(0),
-            scaleX: spring(1),
-            scaleY: spring(1),
-          },
-        })
-      })
+      this.context.renderer.runTransition(this, rect)
     }
   }
 }
