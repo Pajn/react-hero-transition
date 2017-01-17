@@ -3,8 +3,9 @@ import {findDOMNode} from 'react-dom'
 import {cssTransition} from './css-transition'
 
 export const heroTransitionContext = {
-  elementAdded: PropTypes.func,
-  elementRemoved: PropTypes.func,
+  getRemovedHero: PropTypes.func,
+  heroAdded: PropTypes.func,
+  heroRemoved: PropTypes.func,
   renderer: PropTypes.object,
 }
 
@@ -21,15 +22,31 @@ export type ProviderProps = {
 
 export class TransitionProvider extends Component<ProviderProps, {}> {
   static childContextTypes = heroTransitionContext
+  activeHeroes = {}
   removedElements = {}
 
   getChildContext() {
     return {
-      elementAdded: id => {
+      getRemovedHero: id => {
+        if (this.activeHeroes[id]) return null
         return this.removedElements[id]
       },
 
-      elementRemoved: (id, rect) => {
+      heroAdded: (id, hero) => {
+        const previousHero = this.activeHeroes[id]
+        this.activeHeroes[id] = hero
+        if (previousHero) {
+          const rect = previousHero.measure()
+          previousHero.hide()
+          return rect
+        }
+      },
+
+      heroRemoved: (id, hero) => {
+        const rect = hero.measure()
+        if (this.activeHeroes[id] === hero) {
+          delete this.activeHeroes[id]
+        }
         this.removedElements[id] = rect
         setTimeout(() => {
           delete this.removedElements[id]
@@ -72,16 +89,6 @@ export class Hero<T> extends Component<HeroProps, HeroState<T>> {
     this.state.rendererState = context.renderer.initialState
   }
 
-  componentWillMount() {
-    this.oldRect = this.context.elementAdded(this.props.id)
-    if (this.oldRect) {
-      this.setState({render: true} as HeroState<T>, () => {
-        this.maybeRunTransition()
-        this.setState({hidden: false} as HeroState<T>)
-      })
-    }
-  }
-
   componentWillReceiveProps(_, nextContext) {
     if (this.context.renderer !== nextContext.renderer) {
       this.setState({rendererState: nextContext.renderer && nextContext.renderer.initialState})
@@ -89,18 +96,16 @@ export class Hero<T> extends Component<HeroProps, HeroState<T>> {
   }
 
   componentDidMount() {
-    if (!this.state.render) {
-      this.oldRect = this.context.elementAdded(this.props.id)
-      this.setState({render: true} as HeroState<T>, () => {
-        this.maybeRunTransition()
-        this.setState({hidden: false} as HeroState<T>)
-      })
-    }
+    this.oldRect = this.context.getRemovedHero(this.props.id)
+    this.setState({render: true} as HeroState<T>, () => {
+      this.oldRect = this.context.heroAdded(this.props.id, this) || this.oldRect
+      this.maybeRunTransition()
+      this.setState({hidden: false} as HeroState<T>)
+    })
   }
 
   componentWillUnmount() {
-    const rect = this.element.getBoundingClientRect()
-    this.context.elementRemoved(this.props.id, rect)
+    this.context.heroRemoved(this.props.id, this)
   }
 
   render() {
@@ -109,17 +114,25 @@ export class Hero<T> extends Component<HeroProps, HeroState<T>> {
     if (!render) return null
 
     const renderedChildren = this.props.render
-        ? this.props.render({heroIn})
-        : this.props.children
+      ? this.props.render({heroIn})
+      : this.props.children
 
     if (!renderedChildren) return null
 
     return this.context.renderer.render(this, Children.only(renderedChildren))
   }
 
+  measure() {
+    return this.element.getBoundingClientRect()
+  }
+
+  hide() {
+    this.setState({hidden: true} as HeroState<T>)
+  }
+
   private maybeRunTransition() {
     if (this.oldRect) {
-      const rect = this.element.getBoundingClientRect()
+      const rect = this.measure()
       this.context.renderer.runTransition(this, rect)
     }
   }

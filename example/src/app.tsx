@@ -42,17 +42,24 @@ const renderers = {
 }
 
 type State = {
-  loadAnimation?: number
   position?: number
   positionSize?: number
+  loadAnimation?: number
+  multiple?: number
   renderer?: string
 }
 
 export class App extends Component<{}, State> {
-  state = {loadAnimation: undefined, position: 0, positionSize: 0, renderer: 'css'}
+  state = {
+    renderer: 'css',
+    position: 0,
+    positionSize: 0,
+    loadAnimation: undefined,
+    multiple: 0,
+  }
 
   render() {
-    const {loadAnimation, position, positionSize, renderer} = this.state
+    const {loadAnimation, multiple, position, positionSize, renderer} = this.state
 
     return (
       <TransitionProvider renderer={renderers[renderer]}>
@@ -153,6 +160,68 @@ export class App extends Component<{}, State> {
                   } />}
               </Box>
               {loadAnimation !== 2 && <button onClick={() => this.setState({loadAnimation: 2})}>Move here</button>}
+            </Column>
+          </Row>
+          <Row>
+            <Column>
+              <Box>
+                {(multiple & 1) !== 0 && <Hero id='multiple' render={({heroIn}) =>
+                  <Number>
+                    {heroIn
+                      ? <span>0</span>
+                      : <Motion defaultStyle={{angle: 720}} style={{angle: spring(0)}}>
+                          {({angle}) => <span style={{transform: `rotate(${angle}deg)`}}>0</span>}
+                        </Motion>
+                    }
+                  </Number>
+                } />}
+              </Box>
+              <button onClick={() => this.setState({multiple: multiple ^ 1})}>
+                {multiple & 1
+                  ? 'Hide'
+                  : 'Show'
+                }
+              </button>
+            </Column>
+            <Column>
+              <Box>
+                {(multiple & 2) !== 0 && <Hero id='multiple' render={({heroIn}) =>
+                  <Number>
+                    {heroIn
+                      ? <span>1</span>
+                      : <Motion defaultStyle={{angle: 720}} style={{angle: spring(0)}}>
+                          {({angle}) => <span style={{transform: `rotate(${angle}deg)`}}>1</span>}
+                        </Motion>
+                    }
+                  </Number>
+                } />}
+              </Box>
+              <button onClick={() => this.setState({multiple: multiple ^ 2})}>
+                {multiple & 2
+                  ? 'Hide'
+                  : 'Show'
+                }
+              </button>
+            </Column>
+            <Column>
+              <Box>
+                {(multiple & 4) !== 0 && <Hero id='multiple' render={({heroIn}) =>
+                  <Number>
+                    {heroIn
+                      ? <span>2</span>
+                      : <Motion defaultStyle={{angle: 720}} style={{angle: spring(0)}}>
+                          {({angle}) => <span style={{transform: `rotate(${angle}deg)`}}>2</span>}
+                        </Motion>
+                    }
+                  </Number>
+                } />}
+              </Box>
+              <button onClick={() => this.setState({multiple: multiple ^ 4})}>
+                {multiple & 4
+                  ? 'Hide'
+                  : 'Show'
+                }
+              </button>
             </Column>
           </Row>
         </Column>

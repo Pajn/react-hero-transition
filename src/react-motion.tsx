@@ -1,6 +1,7 @@
 import * as React from 'react'
 import {ReactElement, cloneElement} from 'react'
 import {Motion, OpaqueConfig, spring} from 'react-motion'
+import {get, stylePath, transformPath, visibility} from './helpers'
 import {Hero} from './index'
 
 export type State = {
@@ -19,27 +20,22 @@ export const reactMotion = () => ({
   },
 
   render(hero: Hero<State>, renderedChildren: ReactElement<any>) {
-    const {hidden, rendererState} = hero.state
+    const {rendererState} = hero.state
     const heroIn = !!hero.oldRect
 
     return (
       <Motion style={rendererState}>
         {value => cloneElement(renderedChildren, {
             ref: hero.setRef,
-            style: heroIn
-              ? {
-                ...(renderedChildren['props'] && renderedChildren['props'].style),
-                transform: `translate(${value.translateX}px, ${value.translateY}px) ` +
-                           `scale(${value.scaleX}, ${value.scaleY})`,
-                transformOrigin: '0 0',
-              }
-              : {
-                ...(renderedChildren['props'] && renderedChildren['props'].style),
-                visability: hidden
-                  ? 'hidden'
-                  : (renderedChildren['props'] && renderedChildren['props'].style && renderedChildren['props'].style.visability),
-                transformOrigin: '0 0',
-              },
+            style: {
+              ...get(renderedChildren, stylePath),
+              visibility: visibility(renderedChildren, hero),
+              transform: heroIn
+                ? `translate(${value.translateX}px, ${value.translateY}px) ` +
+                  `scale(${value.scaleX}, ${value.scaleY})`
+                : get(renderedChildren, transformPath),
+              transformOrigin: '0 0',
+            },
           }
         )}
       </Motion>

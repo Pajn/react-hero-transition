@@ -1,3 +1,6 @@
 {
-  "extends": "tslint-config-beanloop"
+  "extends": "tslint-config-beanloop",
+  "rules": {
+    "prefer-for-of": false
+  }
 }

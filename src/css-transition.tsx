@@ -1,37 +1,20 @@
 import {ReactElement, cloneElement} from 'react'
+import {get, stylePath, visibility} from './helpers'
 import {Hero} from './index'
 
-export type State = {
-  transform: string
-  transition: string
-}
+export type State = {}
 
 export const cssTransition = ({transition = 'transform 0.4s'} = {}) => ({
-  initialState: {
-    transform: '',
-    transition: '',
-  },
-
   render(hero: Hero<State> , renderedChildren: ReactElement<any>) {
-    const {hidden, rendererState} = hero.state
     const heroIn = !!hero.oldRect
 
     return cloneElement(renderedChildren, {
       ref: hero.setRef,
-      style: heroIn
-        ? {
-          ...(renderedChildren['props'] && renderedChildren['props'].style),
-          transform: rendererState.transform,
-          transformOrigin: '0 0',
-          transition: rendererState.transition,
-        }
-        : {
-          ...(renderedChildren['props'] && renderedChildren['props'].style),
-          visability: hidden
-            ? 'hidden'
-            : (renderedChildren['props'] && renderedChildren['props'].style && renderedChildren['props'].style.visability),
-          transformOrigin: '0 0',
-        },
+      style: Object.assign({
+        ...get(renderedChildren, stylePath),
+        visibility: visibility(renderedChildren, hero),
+        transformOrigin: '0 0',
+      }),
     })
   },
 
@@ -45,12 +28,12 @@ export const cssTransition = ({transition = 'transform 0.4s'} = {}) => ({
     hero.element.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`
 
     requestAnimationFrame(() => {
+      hero.element.addEventListener('transitionend', cleanUp)
       hero.element.style.transition = transition
       requestAnimationFrame(() => {
         hero.element.style.transform = ''
       })
     })
-    hero.element.addEventListener('transitionend', cleanUp)
   },
 })
 
