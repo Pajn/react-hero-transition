@@ -6,8 +6,6 @@ export type State = {}
 
 export const cssTransition = ({transition = 'transform 0.4s'} = {}) => ({
   render(hero: Hero<State> , renderedChildren: ReactElement<any>) {
-    const heroIn = !!hero.oldRect
-
     return cloneElement(renderedChildren, {
       ref: hero.setRef,
       style: Object.assign({
@@ -24,14 +22,14 @@ export const cssTransition = ({transition = 'transform 0.4s'} = {}) => ({
     const scaleX = hero.oldRect.width / rect.width
     const scaleY = hero.oldRect.height / rect.height
 
-    hero.element.style.transition = ''
-    hero.element.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`
+    hero.element['style'].transition = ''
+    hero.element['style'].transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`
 
     requestAnimationFrame(() => {
       hero.element.addEventListener('transitionend', cleanUp)
-      hero.element.style.transition = transition
+      hero.element['style'].transition = transition
       requestAnimationFrame(() => {
-        hero.element.style.transform = ''
+        hero.element['style'].transform = ''
       })
     })
   },
