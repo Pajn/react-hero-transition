@@ -1,6 +1,6 @@
 {
   "name": "react-hero-transition",
-  "version": "0.2.0-alpha2",
+  "version": "0.2.0-alpha3",
   "main": "dist/src/index.js",
   "repository": {
     "url": "https://github.com/Pajn/react-hero-transition",

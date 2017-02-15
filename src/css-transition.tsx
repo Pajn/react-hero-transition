@@ -29,12 +29,16 @@ export const cssTransition = ({transition = 'transform 0.4s'} = {}) => ({
     return new Promise(resolve => {
       function cleanUp(e) {
         e.target.removeEventListener('transitionend', cleanUp)
-        hero.setState({
-          isRunning: false,
-          rendererState: {
-            style: {},
-          }
-        }, () => resolve())
+        if (hero.mounted) {
+          hero.setState({
+            isRunning: false,
+            rendererState: {
+              style: {},
+            }
+          }, () => resolve())
+        } else {
+          resolve()
+        }
       }
 
       hero.setState({
