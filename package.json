@@ -1,6 +1,6 @@
 {
   "name": "react-hero-transition",
-  "version": "0.2.0-alpha3",
+  "version": "0.2.0-alpha5",
   "main": "dist/src/index.js",
   "repository": {
     "url": "https://github.com/Pajn/react-hero-transition",
@@ -14,7 +14,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "tscomp": "^0.7.5",
+    "tscomp": "^0.8.0",
     "tslint": "^4.3.1",
     "tslint-config-beanloop": "^0.1.0"
   },

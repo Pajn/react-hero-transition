@@ -30,7 +30,13 @@ export type Renderer<T> = {
   runTransition: (hero: Hero<T>, fromRect: ClientRect, toRect: ClientRect) => any
 }
 
-export type OldHero = {rect: ClientRect, group?: string, state?: string, isRunning?: boolean}
+export type OldHero = {
+  hero?: Hero<any>
+  rect: ClientRect
+  group?: string
+  state?: string
+  isRunning?: boolean
+}
 
 export type ProviderProps = {
   timeout?: number
@@ -74,6 +80,7 @@ export class TransitionProvider extends Component<ProviderProps, {}> {
           const rect = previousHero.measure()
           previousHero.hide()
           return {
+            hero: previousHero,
             rect,
             group: previousHero.props.group,
             state: previousHero.props.state,
@@ -168,7 +175,8 @@ export type HeroProps = {
   group: string
   state?: string
   skipIfRunning?: boolean
-  skipFromState?: string
+  onlyFromState?: string|Array<string>
+  skipFromState?: string|Array<string>
 }
 
 export type HeroState<T> = {
@@ -223,6 +231,9 @@ export class Hero<T> extends Component<HeroProps, HeroState<T>> {
     if (this.props.id) {
       this.context.heroRemoved(this.props.id, this)
     }
+    if (this.oldHero && this.oldHero.hero) {
+      this.oldHero.hero.show()
+    }
   }
 
   render() {
@@ -241,6 +252,12 @@ export class Hero<T> extends Component<HeroProps, HeroState<T>> {
 
   measure() {
     return this.element.getBoundingClientRect()
+  }
+
+  show() {
+    if (this.mounted) {
+      this.setState({hidden: false} as HeroState<T>)
+    }
   }
 
   hide() {
@@ -271,11 +288,19 @@ export class Hero<T> extends Component<HeroProps, HeroState<T>> {
         this.props.state === this.oldHero.state
       ) &&
       (!this.props.skipIfRunning || !this.oldHero.isRunning) &&
-      (!this.props.skipFromState || this.oldHero.state !== this.props.skipFromState)
+      (!this.props.skipFromState || !inList(this.oldHero.state, this.props.skipFromState)) &&
+      (!this.props.onlyFromState || inList(this.oldHero.state, this.props.onlyFromState))
     ) {
       this.context.runTransition(this, this.oldHero)
     }
   }
+}
+
+function inList(value: string|undefined, arrayOrString: string|Array<string>) {
+  if (!arrayOrString) return false
+  if (arrayOrString === value) return true
+  if (arrayOrString['some'] && arrayOrString['some'](e => e === value)) return true
+  return false
 }
 
 export type CompanionProps = {
