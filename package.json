@@ -1,6 +1,6 @@
 {
   "name": "react-hero-transition",
-  "version": "0.1.2",
+  "version": "0.2.0-alpha2",
   "main": "dist/src/index.js",
   "repository": {
     "url": "https://github.com/Pajn/react-hero-transition",
@@ -22,7 +22,8 @@
     "@types/react": "^15.0.0",
     "@types/react-dom": "^0.14.20",
     "@types/react-motion": "^0.0.20",
-    "react-motion": "^0.4.7"
+    "react-motion": "^0.4.7",
+    "react-router": "4.0.0-beta.6"
   },
   "peerDependencies": {
     "react": "^15.4.2",

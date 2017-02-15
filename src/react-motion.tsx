@@ -11,7 +11,7 @@ export type State = {
   scaleY: number|OpaqueConfig
 }
 
-export const reactMotion = () => ({
+export const reactMotion = (springOptions) => ({
   initialState: {
     translateX: 0,
     translateY: 0,
@@ -21,7 +21,7 @@ export const reactMotion = () => ({
 
   render(hero: Hero<State>, renderedChildren: ReactElement<any>) {
     const {rendererState} = hero.state
-    const heroIn = !!hero.oldRect
+    const heroIn = !!hero.oldHero
 
     return (
       <Motion style={rendererState}>
@@ -42,21 +42,21 @@ export const reactMotion = () => ({
     )
   },
 
-  runTransition(hero: Hero<State>, rect: ClientRect) {
+  runTransition(hero: Hero<State>, fromRect: ClientRect, toRect: ClientRect) {
     hero.setState({
       rendererState: {
-        translateX: hero.oldRect.left - rect.left,
-        translateY: hero.oldRect.top - rect.top,
-        scaleX: hero.oldRect.width / rect.width,
-        scaleY: hero.oldRect.height / rect.height,
+        translateX: fromRect.left - toRect.left,
+        translateY: fromRect.top - toRect.top,
+        scaleX: fromRect.width / toRect.width,
+        scaleY: fromRect.height / toRect.height,
       }
     }, () => {
       hero.setState({
         rendererState: {
-          translateX: spring(0),
-          translateY: spring(0),
-          scaleX: spring(1),
-          scaleY: spring(1),
+          translateX: spring(0, (springOptions && springOptions.translateX) || springOptions),
+          translateY: spring(0, (springOptions && springOptions.translateY) || springOptions),
+          scaleX: spring(1, (springOptions && springOptions.scaleX) || springOptions),
+          scaleY: spring(1, (springOptions && springOptions.scaleY) || springOptions),
         },
       })
     })
