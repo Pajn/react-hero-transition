@@ -27,8 +27,15 @@ export const cssTransition = ({transition = 'transform 0.4s'} = {}) => ({
     const transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`
 
     return new Promise(resolve => {
-      function cleanUp(e) {
-        e.target.removeEventListener('transitionend', cleanUp)
+      let observer
+
+      function cleanUp(e?) {
+        if (e) {
+          e.target.removeEventListener('transitionend', cleanUp)
+        }
+        if (observer) {
+          observer.disconnect()
+        }
         if (hero.mounted) {
           hero.setState({
             isRunning: false,
@@ -39,6 +46,22 @@ export const cssTransition = ({transition = 'transform 0.4s'} = {}) => ({
         } else {
           resolve()
         }
+      }
+
+      // The hero may be removed from the DOM during transition and transitionend will then
+      // never be called so we set up this MutationObserver to track and handle that case.
+      if (hero.element) {
+        observer = new MutationObserver(mutations => {
+          mutations.forEach(mutation => {
+            if (mutation.removedNodes.length > 0) {
+              if (!document.body.contains(hero.element)) {
+                cleanUp()
+              }
+            }
+          })
+        })
+
+        observer.observe(window.document, {subtree: true, childList: true})
       }
 
       hero.setState({
