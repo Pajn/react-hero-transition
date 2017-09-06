@@ -1,10 +1,12 @@
 {
-  "compileOnSave": false,
 	"compilerOptions": {
-    "outDir": "dist",
+    "declaration": true,
+    "outDir": "lib",
 		"target": "es2015",
+		"module": "es2015",
     "moduleResolution": "node",
-		"jsx": "react",
+    "jsx": "react",
+    "lib": ["dom", "es2015"],
     "allowSyntheticDefaultImports": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

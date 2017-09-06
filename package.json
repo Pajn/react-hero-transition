@@ -1,7 +1,9 @@
 {
   "name": "react-hero-transition",
-  "version": "0.2.0-alpha5",
-  "main": "dist/src/index.js",
+  "version": "0.1.2",
+  "main": "cjs/index.js",
+  "module": "lib/index.js",
+  "typings": "lib/index.d.ts",
   "repository": {
     "url": "https://github.com/Pajn/react-hero-transition",
     "type": "git"
@@ -14,19 +16,22 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "tscomp": "^0.8.0",
+    "tscomp": "^0.13.2",
     "tslint": "^4.3.1",
     "tslint-config-beanloop": "^0.1.0"
   },
   "dependencies": {
-    "@types/react": "^15.0.0",
-    "@types/react-dom": "^0.14.20",
-    "@types/react-motion": "^0.0.20",
-    "react-motion": "^0.4.7",
+    "@types/react": "^16.0.2",
+    "@types/react-dom": "^15.5.3",
+    "@types/react-motion": "^0.0.23",
+    "react-motion": "^0.5.0",
     "react-router": "4.0.0-beta.6"
   },
   "peerDependencies": {
     "react": "^15.4.2",
     "react-dom": "^15.4.2"
+  },
+  "tscomp": {
+    "mode": "lib"
   }
 }

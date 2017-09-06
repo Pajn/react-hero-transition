@@ -1,3 +1,4 @@
-dist/
+cjs/
+lib/
 node_modules/
 yarn.lock
