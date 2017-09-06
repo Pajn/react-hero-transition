@@ -170,7 +170,7 @@ export class TransitionProvider extends Component<ProviderProps, {}> {
 
 export type HeroProps = {
   id: string
-  render?: (o: {heroIn: boolean, isRunning: boolean}) => ReactElement<any>
+  render?: (o: {heroIn: boolean, isRunning: boolean}) => ReactElement<any>|Array<ReactElement<any>>
   children?: ReactElement<any>
   group: string
   state?: string
