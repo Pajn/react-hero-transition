@@ -1,4 +1,5 @@
-import {Children, Component, PropTypes, ReactElement} from 'react'
+import PropTypes from 'prop-types'
+import {Children, Component, ReactElement} from 'react'
 import {findDOMNode} from 'react-dom'
 import {cssTransition} from './css-transition'
 
@@ -177,6 +178,7 @@ export type HeroProps = {
   skipIfRunning?: boolean
   onlyFromState?: string|Array<string>
   skipFromState?: string|Array<string>
+  skipInitialRender?: boolean
 }
 
 export type HeroState<T> = {
@@ -237,9 +239,10 @@ export class Hero<T> extends Component<HeroProps, HeroState<T>> {
   }
 
   render() {
+    const {skipInitialRender} = this.props
     const {isRunning, render} = this.state
     const heroIn = !!this.oldHero
-    if (!render) return null
+    if (skipInitialRender && !render) return null
 
     const renderedChildren = this.props.render
       ? this.props.render({heroIn, isRunning: isRunning!})
