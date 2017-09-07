@@ -2,7 +2,7 @@ import {ReactElement, cloneElement} from 'react'
 import {get, stylePath, visibility} from './helpers'
 import {Hero} from './index'
 
-export type State = {style: {transition?: string, transform?: string}}
+export type State = {style: {transition?: string, transform?: string, transformOrigin?: string}}
 
 export const cssTransition = ({transition = 'transform 0.4s'} = {}) => ({
   initialState: {style: {}},
@@ -13,7 +13,6 @@ export const cssTransition = ({transition = 'transform 0.4s'} = {}) => ({
       style: Object.assign({
         ...get(renderedChildren, stylePath),
         visibility: visibility(renderedChildren, hero),
-        transformOrigin: '0 0',
         ...hero.state.rendererState.style,
       }),
     })
@@ -70,6 +69,7 @@ export const cssTransition = ({transition = 'transform 0.4s'} = {}) => ({
           style: {
             transition: ``,
             transform,
+            transformOrigin: '0 0',
           },
         }
       }, () => {
@@ -80,6 +80,7 @@ export const cssTransition = ({transition = 'transform 0.4s'} = {}) => ({
               style: {
                 transition,
                 transform,
+                transformOrigin: '0 0',
               },
             },
           }, () => {
@@ -90,7 +91,7 @@ export const cssTransition = ({transition = 'transform 0.4s'} = {}) => ({
                 rendererState: {
                   style: {
                     transition,
-                    transform: ``,
+                    transformOrigin: '0 0',
                   },
                 },
               })
