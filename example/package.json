@@ -12,6 +12,7 @@
     "@types/react-motion": "0.0.23",
     "react": "16.0.0",
     "react-dom": "16.0.0",
+    "react-hero-transition": "^0.3.0",
     "react-motion": "0.5.2"
   },
   "devDependencies": {
