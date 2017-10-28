@@ -1,6 +1,6 @@
 {
   "name": "react-hero-transition",
-  "version": "0.1.2",
+  "version": "0.3.0",
   "main": "cjs/index.js",
   "module": "lib/index.js",
   "typings": "lib/index.d.ts",
