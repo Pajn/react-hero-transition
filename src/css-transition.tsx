@@ -1,15 +1,16 @@
 import {ReactElement, cloneElement} from 'react'
+import {Hero} from './Hero'
 import {get, stylePath, visibility} from './helpers'
-import {Hero} from './index'
 
-export type State = {style: {transition?: string, transform?: string, transformOrigin?: string}}
+export type State = {
+  style: {transition?: string; transform?: string; transformOrigin?: string}
+}
 
 export const cssTransition = ({transition = 'transform 0.4s'} = {}) => ({
   initialState: {style: {}},
 
-  render(hero: Hero<State> , renderedChildren: ReactElement<any>) {
+  render(hero: Hero<State>, renderedChildren: ReactElement<any>) {
     return cloneElement(renderedChildren, {
-      ref: hero.setRef,
       style: Object.assign({
         ...get(renderedChildren, stylePath),
         visibility: visibility(renderedChildren, hero),
@@ -18,7 +19,7 @@ export const cssTransition = ({transition = 'transform 0.4s'} = {}) => ({
     })
   },
 
-  runTransition(hero: Hero<State> , fromRect: ClientRect, toRect: ClientRect) {
+  runTransition(hero: Hero<State>, fromRect: ClientRect, toRect: ClientRect) {
     const translateX = fromRect.left - toRect.left
     const translateY = fromRect.top - toRect.top
     const scaleX = fromRect.width / toRect.width
@@ -26,9 +27,9 @@ export const cssTransition = ({transition = 'transform 0.4s'} = {}) => ({
     const transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`
 
     return new Promise(resolve => {
-      let observer
+      let observer: MutationObserver
 
-      function cleanUp(e?) {
+      function cleanUp(e?: Event) {
         if (e) {
           e.target.removeEventListener('transitionend', cleanUp)
         }
@@ -36,12 +37,15 @@ export const cssTransition = ({transition = 'transform 0.4s'} = {}) => ({
           observer.disconnect()
         }
         if (hero.mounted) {
-          hero.setState({
-            isRunning: false,
-            rendererState: {
-              style: {},
-            }
-          }, () => resolve())
+          hero.setState(
+            {
+              isRunning: false,
+              rendererState: {
+                style: {},
+              },
+            },
+            () => resolve(),
+          )
         } else {
           resolve()
         }
@@ -63,42 +67,53 @@ export const cssTransition = ({transition = 'transform 0.4s'} = {}) => ({
         observer.observe(window.document, {subtree: true, childList: true})
       }
 
-      hero.setState({
-        isRunning: true,
-        rendererState: {
-          style: {
-            transition: ``,
-            transform,
-            transformOrigin: '0 0',
-          },
-        }
-      }, () => {
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-          if (!hero.mounted) return
-          hero.setState({
-            rendererState: {
-              style: {
-                transition,
-                transform,
-                transformOrigin: '0 0',
-              },
+      hero.setState(
+        {
+          isRunning: true,
+          rendererState: {
+            style: {
+              transition: ``,
+              transform,
+              transformOrigin: '0 0',
             },
-          }, () => {
-            requestAnimationFrame(() => requestAnimationFrame(() => {
+          },
+        },
+        () => {
+          requestAnimationFrame(() =>
+            requestAnimationFrame(() => {
               if (!hero.mounted) return
-              if (hero.element) hero.element.addEventListener('transitionend', cleanUp)
-              hero.setState({
-                rendererState: {
-                  style: {
-                    transition,
-                    transformOrigin: '0 0',
+              hero.setState(
+                {
+                  rendererState: {
+                    style: {
+                      transition,
+                      transform,
+                      transformOrigin: '0 0',
+                    },
                   },
                 },
-              })
-            }))
-          })
-        }))
-      })
+                () => {
+                  requestAnimationFrame(() =>
+                    requestAnimationFrame(() => {
+                      if (!hero.mounted) return
+                      if (hero.element)
+                        hero.element.addEventListener('transitionend', cleanUp)
+                      hero.setState({
+                        rendererState: {
+                          style: {
+                            transition,
+                            transformOrigin: '0 0',
+                          },
+                        },
+                      })
+                    }),
+                  )
+                },
+              )
+            }),
+          )
+        },
+      )
     })
   },
 })

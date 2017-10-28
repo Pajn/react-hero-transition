@@ -7,14 +7,21 @@
     "start": "tscomp start"
   },
   "dependencies": {
-    "@types/react": "^15.0.0",
-    "@types/react-dom": "^0.14.20",
-    "@types/react-motion": "^0.0.20",
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2",
-    "react-motion": "^0.4.7"
+    "@types/react": "16.0.18",
+    "@types/react-dom": "16.0.2",
+    "@types/react-motion": "0.0.23",
+    "react": "16.0.0",
+    "react-dom": "16.0.0",
+    "react-motion": "0.5.2"
   },
   "devDependencies": {
-    "tscomp": "^0.7.5"
+    "tscomp": "0.13.7"
+  },
+  "resolutions": {
+    "@types/react": "16.0.18",
+    "@types/react-dom": "16.0.2"
+  },
+  "tscomp": {
+    "mode": "browser"
   }
 }

@@ -1,20 +1,17 @@
 {
-	"compilerOptions": {
+  "compilerOptions": {
     "declaration": true,
     "outDir": "lib",
-		"target": "es2015",
-		"module": "es2015",
+    "target": "es2015",
+    "module": "es2015",
     "moduleResolution": "node",
     "jsx": "react",
     "lib": ["dom", "es2015"],
     "allowSyntheticDefaultImports": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "strictNullChecks": true,
-    "alwaysStrict": true,
+    "strict": true,
     "forceConsistentCasingInFileNames": true
-	},
-	"exclude": [
-		"node_modules"
-	]
+  },
+  "exclude": ["node_modules"]
 }

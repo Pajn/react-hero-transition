@@ -78,3 +78,13 @@ If a render function is provided, it will be called with a single argument conta
 with a `heroIn` property. `heroIn` will be true if the hero will perform an hero transition and false
 otherwise. This can be used to for example show a fade in animation instead. The function should return
 a single rendered ReactElement that corresponds to the same rules as for the children prop.
+
+## Example
+To start the example run
+
+```
+yarn
+yarn start
+```
+
+in the example folder
